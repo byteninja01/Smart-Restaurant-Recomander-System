@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Restaurants - DBMS Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .compare-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 30px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        .compare-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        .compare-input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .compare-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        .compare-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .vs-divider {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2em;
+            color: #764ba2;
+            font-weight: bold;
+        }
+        .info-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-content">
+            <h1>⚖️ Compare Restaurants</h1>
+            <div class="navbar-links">
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/recommend" class="nav-link">🍽️ Recommend</a>
+                <a href="/advanced-search" class="nav-link">🔍 Search</a>
+                <a href="/dashboard" class="nav-link">📊 Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="compare-container">
+        <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2em; text-align: center;">
+            Compare Two Restaurants
+        </h2>
+        
+        <form action="/compare-results" method="POST">
+            <div class="input-group">
+                <label for="restaurant1">🍴 First Restaurant</label>
+                <input 
+                    type="text" 
+                    name="restaurant1" 
+                    id="restaurant1"
+                    class="compare-input" 
+                    placeholder="e.g., Truffles" 
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="vs-divider">VS</div>
+
+            <div class="input-group">
+                <label for="restaurant2">🍴 Second Restaurant</label>
+                <input 
+                    type="text" 
+                    name="restaurant2" 
+                    id="restaurant2"
+                    class="compare-input" 
+                    placeholder="e.g., Toit" 
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <button type="submit" class="compare-btn">
+                ⚖️ Compare Restaurants
+            </button>
+        </form>
+
+        <div class="info-box">
+            <h3 style="color: #667eea; margin-bottom: 15px;">💡 Comparison Features</h3>
+            <ul style="color: #555; line-height: 2;">
+                <li>✅ Side-by-side restaurant comparison</li>
+                <li>✅ ML-powered similarity scoring</li>
+                <li>✅ Compare cuisine, locality, price & ratings</li>
+                <li>✅ Visual winner highlighting</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="/" class="back-btn" style="margin-right: 15px;">
+                ← Back to Home
+            </a>
+            <a href="/recommend" class="back-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                🍽️ Get Recommendations
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .compare-container {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .compare-input {
+            transition: all 0.3s ease;
+        }
+
+        .compare-input:focus {
+            transform: scale(1.02);
+        }
+    </style>
+</body>
+</html>

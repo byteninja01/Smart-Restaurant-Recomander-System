@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations - DBMS Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .result-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        } */
+
+        /* .header-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            color: white;
+        } */
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            background: #fff3cd;
+            border-radius: 15px;
+            border-left: 5px solid #ffc107;
+            margin: 30px 0;
+        }
+
+        .error-message h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .error-message p {
+            color: #856404;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .suggestions {
+            background: #8db7e0;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid #000000;
+        }
+
+        .suggestions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .suggestions li {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgb(0, 0, 0);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .suggestions li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            background: #e3f2fd;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgb(216, 157, 157);
+        }
+
+        .recommendation-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .recommendation-table th {
+            padding: 18px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+
+        }
+
+        .recommendation-table td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .recommendation-table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .recommendation-table tbody tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        .recommendation-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rating {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .recommendation-table {
+                font-size: 0.9em;
+            }
+
+            .recommendation-table th,
+            .recommendation-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        {% if error %}
+            <div class="header-section">
+                <h1 style="font-size: 2.5em; margin: 0;">❌ Restaurant Not Found</h1>
+            </div>
+
+            <div class="error-message">
+                <h3>Sorry, we couldn't find "{{ restaurant_name }}" in our database.</h3>
+                <p>Please check the spelling or try searching for a different restaurant.</p>
+            </div>
+
+            {% if suggestions %}
+                <div class="suggestions">
+                    <h3 style="color: #2196F3; margin-bottom: 15px; font-size: 1.3em;">🔍 Did you mean one of these?</h3>
+                    <ul>
+                        {% for suggestion in suggestions %}
+                            <li>
+                                <strong style="font-size: 1.1em;">{{ suggestion|title }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <p style="margin-top: 20px; color: #666; font-size: 0.95em;">
+                        <strong>💡 Tip:</strong> Copy the exact name above and search again, or use the autocomplete feature.
+                    </p>
+                </div>
+            {% endif %}
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="/recommend" class="back-btn">
+                    🔙 Search Again
+                </a>
+            </div>
+
+        {% else %}
+            <div class="header-section">
+                <h1 style="font-size: 2.5em; margin: 0 0 10px 0;">✨ Top Recommendations</h1>
+                <p style="font-size: 1.3em; opacity: 0.95; margin: 0;">
+                    Similar to <strong>"{{ restaurant_name|title }}"</strong>
+                </p>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="recommendation-table">
+                    <thead>
+                        <tr>
+                            <th>🍽️ Restaurant Name</th>
+                            <th>🍕 Category</th>
+                            <th>📍 Locality</th>
+                            <th>💰 Price for 2</th>
+                            <th>⭐ Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rec in recommendations %}
+                        <tr>
+                            <td><strong style="color: #667eea; font-size: 1.05em;">{{ rec[0] }}</strong></td>
+                            <td>{{ rec[1] }}</td>
+                            <td>{{ rec[2] }}</td>
+                            <td><strong>₹{{ rec[3] }}</strong></td>
+                            <td><span class="rating">⭐ {{ rec[4] }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="/recommend" class="back-btn">
+                    🔙 Search Again
+                </a>
+                <a href="/compare" class="back-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    ⚖️ Compare Restaurants
+                </a>
+                <a href="/dashboard" class="back-btn" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    📊 View Dashboard
+                </a>
+                <a href="/" class="back-btn" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    🏠 Home
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

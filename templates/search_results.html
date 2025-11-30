@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Restaurant Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .results-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .filter-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .result-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .result-detail {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .rating-badge {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .price-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-content">
+            <h1>🔍 Search Results</h1>
+            <div class="navbar-links">
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/advanced-search" class="nav-link">🔄 New Search</a>
+                <a href="/dashboard" class="nav-link">📊 Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width: 1400px; margin: 50px auto; padding: 20px;">
+        <div class="results-header">
+            <h2 style="margin: 0; font-size: 2em;">Found {{ count }} Restaurant{% if count != 1 %}s{% endif %}</h2>
+            <div class="filter-tags">
+                {% if filters.cuisine %}
+                <div class="filter-tag">🍕 {{ filters.cuisine }}</div>
+                {% endif %}
+                {% if filters.locality %}
+                <div class="filter-tag">📍 {{ filters.locality }}</div>
+                {% endif %}
+                {% if filters.min_rating %}
+                <div class="filter-tag">⭐ Rating ≥ {{ filters.min_rating }}</div>
+                {% endif %}
+                {% if filters.max_price %}
+                <div class="filter-tag">💰 Price ≤ ₹{{ filters.max_price }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if count == 0 %}
+            <div class="no-results">
+                <h2 style="color: #667eea; margin-bottom: 20px;">😕 No Restaurants Found</h2>
+                <p style="font-size: 1.1em; color: #666; margin-bottom: 30px;">
+                    Try adjusting your filters for better results
+                </p>
+                <a href="/advanced-search" class="back-btn">🔙 Back to Search</a>
+            </div>
+        {% else %}
+            <div class="results-grid">
+                {% for restaurant in results %}
+                <div class="result-card">
+                    <h3>{{ restaurant[0] }}</h3>
+                    
+                    <div class="result-detail">
+                        <span style="color: #667eea;">🍽️ Category:</span>
+                        <span>{{ restaurant[1] }}</span>
+                    </div>
+                    
+                    <div class="result-detail">
+                        <span style="color: #667eea;">📍 Locality:</span>
+                        <span>{{ restaurant[2] }}</span>
+                    </div>
+                    
+                    <div class="result-detail" style="margin-top: 15px; justify-content: space-between;">
+                        <span class="rating-badge">⭐ {{ restaurant[4] }}</span>
+                        <span class="price-badge">₹{{ restaurant[3] }} for 2</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="/advanced-search" class="back-btn" style="margin-right: 15px;">
+                    🔄 Refine Search
+                </a>
+                <a href="/recommend" class="back-btn">
+                    🍽️ Get Recommendations
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

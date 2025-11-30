@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Search - Restaurant Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .filter-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .filter-group {
+            margin-bottom: 25px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        .filter-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        .filter-input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .search-btn-advanced {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        .search-btn-advanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .info-box {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-content">
+            <h1>🔍 Advanced Restaurant Search</h1>
+            <div class="navbar-links">
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/recommend" class="nav-link">🍽️ Recommend</a>
+                <a href="/compare" class="nav-link">⚖️ Compare</a>
+                <a href="/dashboard" class="nav-link">📊 Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-container">
+        <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2em; text-align: center;">
+            Find Your Perfect Restaurant
+        </h2>
+        
+        <form action="/search-results" method="POST">
+            <div class="filter-group">
+                <label for="cuisine">🍕 Cuisine Type</label>
+                <select name="cuisine" id="cuisine" class="filter-input">
+                    <option value="">All Cuisines</option>
+                    {% for cuisine in cuisines %}
+                    <option value="{{ cuisine }}">{{ cuisine }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="locality">📍 Locality</label>
+                <select name="locality" id="locality" class="filter-input">
+                    <option value="">All Localities</option>
+                    {% for locality in localities %}
+                    <option value="{{ locality }}">{{ locality }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="min_rating">⭐ Minimum Rating</label>
+                    <input type="number" name="min_rating" id="min_rating" 
+                           class="filter-input" min="0" max="5" step="0.1" 
+                           placeholder="e.g., 4.0">
+                </div>
+
+                <div class="filter-group">
+                    <label for="max_price">💰 Max Price for 2</label>
+                    <input type="number" name="max_price" id="max_price" 
+                           class="filter-input" min="0" step="100" 
+                           placeholder="e.g., 1000">
+                </div>
+            </div>
+
+            <button type="submit" class="search-btn-advanced">
+                🔎 Search Restaurants
+            </button>
+        </form>
+
+        <div class="info-box">
+            <h3 style="color: #667eea; margin-bottom: 10px;">💡 Search Tips</h3>
+            <ul style="color: #555; line-height: 1.8;">
+                <li>Leave filters empty to see all restaurants</li>
+                <li>Combine multiple filters for precise results</li>
+                <li>Results are sorted by highest rating first</li>
+                <li>Up to 20 best matches will be shown</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

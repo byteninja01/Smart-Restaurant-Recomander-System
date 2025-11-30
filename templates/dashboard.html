@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - DBMS Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .chart {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-content">
+            <h1>📊 Restaurant Analytics Insights</h1>
+            <div class="navbar-links">
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/recommend" class="nav-link">🍽️ Recommend</a>
+                <a href="/advanced-search" class="nav-link">🔍 Search</a>
+                <a href="/compare" class="nav-link">⚖️ Compare</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h2 class="dashboard-title">Restaurant Analytics Dashboard</h2>
+            <p class="dashboard-subtitle">Comprehensive data insights powered by Plotly & Pandas</p>
+        </div>
+
+        <!-- Key Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="stat-label">Total Restaurants</div>
+                <div class="stat-number">{{ stats.total_restaurants }}</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="stat-label">Avg Dining Rating</div>
+                <div class="stat-number">{{ stats.avg_dining_rating }}</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="stat-label">Avg Price for 2</div>
+                <div class="stat-number">₹{{ stats.avg_price|int }}</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="stat-label">Cuisine Types</div>
+                <div class="stat-number">{{ stats.total_cuisines }}</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="stat-label">Localities</div>
+                <div class="stat-number">{{ stats.total_localities }}</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="chart">
+                <h3 class="chart-title">📈 Top Cuisine Categories</h3>
+                {{ graph1|safe }}
+            </div>
+
+            <div class="chart">
+                <h3 class="chart-title">💰 Price vs Dining Rating Analysis</h3>
+                <p style="color: #666; margin-bottom: 15px;">Scatter plot with trendline showing correlation between pricing and ratings</p>
+                {{ graph2|safe }}
+            </div>
+
+            <div class="chart">
+                <h3 class="chart-title">🏆 Top Localities by Average Rating</h3>
+                {{ graph3|safe }}
+            </div>
+
+            <div class="chart">
+                <h3 class="chart-title">📊 Dining vs Delivery Rating Distribution</h3>
+                <p style="color: #666; margin-bottom: 15px;">Box plot comparing rating distributions for dine-in and delivery services</p>
+                {{ graph4|safe }}
+            </div>
+
+            <div class="chart">
+                <h3 class="chart-title">🎻 Price Distribution Across Cuisines</h3>
+                <p style="color: #666; margin-bottom: 15px;">Violin plot showing price range variations by cuisine type</p>
+                {{ graph5|safe }}
+            </div>
+
+            <div class="chart">
+                <h3 class="chart-title">🗺️ Geographic Distribution of Restaurants</h3>
+                <p style="color: #666; margin-bottom: 15px;">Interactive map showing restaurant locations colored by dining rating</p>
+                {{ graph6|safe }}
+            </div>
+        </div>
+
+        <div class="dashboard-footer">
+            <p>📊 Dashboard developed with <strong>Plotly</strong> | Data processing using <strong>Pandas & SQL concepts</strong></p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                Features: Aggregation • Grouping • Statistical Analysis • Geographic Visualization
+            </p>
+        </div>
+    </div>
+</body>
+</html>

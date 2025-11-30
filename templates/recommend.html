@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Recommendations - DBMS Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .search-container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        } */
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-section h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+
+        .header-section p {
+            margin: 0;
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 3px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            display: none;
+            margin-top: -3px;
+        }
+
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: #f0f7ff;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #764ba2;
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-box li {
+            padding: 10px 0;
+            color: #555;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .search-container {
+                padding: 25px;
+            }
+
+            .header-section h1 {
+                font-size: 2em;
+            }
+
+            .search-box {
+                font-size: 1em;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <div class="header-section">
+            <h1>🍽️ Restaurant Finder</h1>
+            <p>Discover restaurants similar to your favorites</p>
+        </div>
+
+        <div style="padding: 20px;">
+            <h2 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em; text-align: center;">
+                Enter Your Favorite Restaurant
+            </h2>
+            
+            <form action="/get-recommendations" method="POST" id="recommendForm">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        name="restaurant" 
+                        id="restaurant"
+                        class="search-box" 
+                        placeholder="Start typing restaurant name..." 
+                        required
+                        autocomplete="off"
+                    >
+                    <div class="autocomplete-dropdown" id="dropdown"></div>
+                </div>
+                
+                <button type="submit" class="search-btn">
+                    🔍 Get Recommendations
+                </button>
+
+                <div class="loading" id="loading">
+                    ⏳ Searching for recommendations...
+                </div>
+            </form>
+
+            <div class="info-box">
+                <h3>💡 How It Works</h3>
+                <ul>
+                    <li>✅ Start typing your favorite restaurant name</li>
+                    <li>✅ Select from autocomplete suggestions</li>
+                    <li>✅ Our ML model analyzes cuisine, location, price, and ratings</li>
+                    <li>✅ Get 5 personalized restaurant recommendations instantly</li>
+                    <li>✅ Discover new places with similar vibes and characteristics</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/" class="back-btn">
+                    ← Back to Home
+                </a>
+                <a href="/compare" class="back-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    ⚖️ Compare Restaurants
+                </a>
+                <a href="/dashboard" class="back-btn" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    📊 View Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('restaurant');
+        const dropdown = document.getElementById('dropdown');
+        const form = document.getElementById('recommendForm');
+        const loading = document.getElementById('loading');
+        let debounceTimer;
+
+        // Autocomplete functionality
+        input.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`/api/restaurants?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            dropdown.innerHTML = data.map(name => {
+                                const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                                return `<div class="autocomplete-item" data-name="${name}">${displayName}</div>`;
+                            }).join('');
+                            dropdown.classList.add('active');
+
+                            // Add click handlers
+                            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                                item.addEventListener('click', function() {
+                                    input.value = this.dataset.name;
+                                    dropdown.classList.remove('active');
+                                });
+                            });
+                        } else {
+                            dropdown.innerHTML = '<div class="autocomplete-item" style="color: #999; cursor: default;">No restaurants found</div>';
+                            dropdown.classList.add('active');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching suggestions:', error);
+                        dropdown.classList.remove('active');
+                    });
+            }, 300);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Show loading indicator on form submit
+        form.addEventListener('submit', function() {
+            loading.style.display = 'block';
+        });
+
+        // Focus input on page load
+        window.addEventListener('load', function() {
+            input.focus();
+        });
+    </script>
+</body>
+</html>
